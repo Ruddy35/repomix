@@ -162,6 +162,22 @@ describe('defaultAction', () => {
     );
   });
 
+  it('should handle ignore-content patterns', async () => {
+    const options: CliOptions = {
+      ignoreContent: 'docs/**,LICENSE',
+    };
+
+    await runDefaultAction(['.'], process.cwd(), options);
+
+    expect(configLoader.mergeConfigs).toHaveBeenCalledWith(
+      process.cwd(),
+      expect.anything(),
+      expect.objectContaining({
+        ignoreContent: ['docs/**', 'LICENSE'],
+      }),
+    );
+  });
+
   it('should handle custom output style', async () => {
     const options: CliOptions = {
       style: 'xml',

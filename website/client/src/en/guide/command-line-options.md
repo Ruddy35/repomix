@@ -35,6 +35,7 @@
 ## File Selection Options
 - `--include <patterns>`: List of include patterns (comma-separated)
 - `-i, --ignore <patterns>`: Additional ignore patterns (comma-separated)
+- `--ignore-content <patterns>`: Skip file content for matched patterns (comma-separated)
 - `--no-gitignore`: Disable .gitignore file usage
 - `--no-default-patterns`: Disable default patterns
 
@@ -72,6 +73,9 @@ repomix --compress
 
 # Process specific files
 repomix --include "src/**/*.ts" --ignore "**/*.test.ts"
+
+# Ignore file contents for matching patterns
+repomix --ignore-content "docs/**,LICENSE"
 
 # Remote repository with branch
 repomix --remote https://github.com/user/repo/tree/main

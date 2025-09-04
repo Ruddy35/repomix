@@ -1,3 +1,4 @@
+import { minimatch } from 'minimatch';
 import pc from 'picocolors';
 import type { RepomixConfigMerged } from '../../config/configSchema.js';
 import { logger } from '../../shared/logger.js';
@@ -34,6 +35,7 @@ export const collectFiles = async (
         filePath,
         rootDir,
         maxFileSize: config.input.maxFileSize,
+        skipContent: config.ignoreContent.some((pattern) => minimatch(filePath, pattern)),
       }) satisfies FileCollectTask,
   );
 
