@@ -103,6 +103,33 @@ describe('fileCollect', () => {
     expect(fs.readFile).toHaveBeenCalledTimes(1);
   });
 
+  it('should apply ignoreContent overrides with ! prefix', async () => {
+    const mockFilePaths = ['components/button.ts', 'components/bage/index.ts'];
+    const mockRootDir = '/root';
+    const mockConfig = createMockConfig({
+      ignoreContent: ['components'],
+      ignoreContentOverrides: ['components/bage'],
+    });
+
+    vi.mocked(isBinary).mockReturnValue(false);
+    vi.mocked(fs.readFile).mockResolvedValue(Buffer.from('file content'));
+    vi.mocked(jschardet.detect).mockReturnValue({ encoding: 'utf-8', confidence: 0.99 });
+    vi.mocked(iconv.decode).mockReturnValue('decoded content');
+
+    const result = await collectFiles(mockFilePaths, mockRootDir, mockConfig, () => {}, {
+      initTaskRunner: mockInitTaskRunner,
+    });
+
+    expect(result).toEqual({
+      rawFiles: [
+        { path: 'components/button.ts' },
+        { path: 'components/bage/index.ts', content: 'decoded content' },
+      ],
+      skippedFiles: [],
+    });
+    expect(fs.readFile).toHaveBeenCalledTimes(1);
+  });
+
   it('should skip binary files', async () => {
     const mockFilePaths = ['binary.bin', 'text.txt'];
     const mockRootDir = '/root';

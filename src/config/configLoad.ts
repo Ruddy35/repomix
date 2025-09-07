@@ -130,11 +130,8 @@ export const mergeConfigs = (
       ...cliConfig.output,
     },
     include: [...(baseConfig.include || []), ...(fileConfig.include || []), ...(cliConfig.include || [])],
-    ignoreContent: [
-      ...(baseConfig.ignoreContent || []),
-      ...(fileConfig.ignoreContent || []),
-      ...(cliConfig.ignoreContent || []),
-    ],
+    ignoreContent: [],
+    ignoreContentOverrides: [],
     ignore: {
       ...baseConfig.ignore,
       ...fileConfig.ignore,
@@ -151,6 +148,20 @@ export const mergeConfigs = (
       ...cliConfig.security,
     },
   };
+
+  // Combine ignoreContent patterns and handle overrides
+  const combinedIgnoreContent = [
+    ...(baseConfig.ignoreContent || []),
+    ...(fileConfig.ignoreContent || []),
+    ...(cliConfig.ignoreContent || []),
+  ];
+  mergedConfig.ignoreContent = combinedIgnoreContent.filter((p) => !p.startsWith('!'));
+  mergedConfig.ignoreContentOverrides = [
+    ...(baseConfig.ignoreContentOverrides || []),
+    ...(fileConfig.ignoreContentOverrides || []),
+    ...(cliConfig.ignoreContentOverrides || []),
+    ...combinedIgnoreContent.filter((p) => p.startsWith('!')).map((p) => p.slice(1)),
+  ];
 
   try {
     return repomixConfigMergedSchema.parse(mergedConfig);
