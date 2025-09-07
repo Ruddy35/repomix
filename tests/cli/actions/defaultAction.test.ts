@@ -174,6 +174,24 @@ describe('defaultAction', () => {
       expect.anything(),
       expect.objectContaining({
         ignoreContent: ['docs/**', 'LICENSE'],
+        ignoreContentOverrides: [],
+      }),
+    );
+  });
+
+  it('should handle ignore-content override patterns with !', async () => {
+    const options: CliOptions = {
+      ignoreContent: 'components,!components/bage',
+    };
+
+    await runDefaultAction(['.'], process.cwd(), options);
+
+    expect(configLoader.mergeConfigs).toHaveBeenCalledWith(
+      process.cwd(),
+      expect.anything(),
+      expect.objectContaining({
+        ignoreContent: ['components'],
+        ignoreContentOverrides: ['components/bage'],
       }),
     );
   });

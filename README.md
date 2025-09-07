@@ -565,7 +565,7 @@ Instruction
 #### File Selection Options
 - `--include <patterns>`: List of include patterns (comma-separated)
 - `-i, --ignore <patterns>`: Additional ignore patterns (comma-separated)
-- `--ignore-content <patterns>`: Patterns to include files but skip their content (comma-separated)
+- `--ignore-content <patterns>`: Patterns to include files but skip their content (comma-separated, prefix with `!` to override)
 - `--no-gitignore`: Disable .gitignore file usage
 - `--no-default-patterns`: Disable default patterns
 
@@ -610,6 +610,9 @@ repomix --include "src/**/*.ts" --ignore "**/*.test.ts"
 
 # Ignore file contents for matching patterns
 repomix --ignore-content "docs/**,LICENSE"
+
+# Ignore contents but re-include specific paths
+repomix --ignore-content "components,!components/bage"
 
 # Remote repository with branch
 repomix --remote https://github.com/user/repo/tree/main
@@ -963,7 +966,7 @@ Here's an explanation of the configuration options:
 | `output.git.includeLogs`        | Whether to include git logs in the output (includes commit history with dates, messages, and file paths)                   | `false`                |
 | `output.git.includeLogsCount`   | Number of git log commits to include                                                                                         | `50`                   |
 | `include`                        | Patterns of files to include (using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax))  | `[]`                   |
-| `ignoreContent`                  | Patterns of files whose content should be ignored (using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax)) | `[]`                   |
+| `ignoreContent`                  | Patterns of files whose content should be ignored (using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax)). Prefix with `!` to re-include paths. | `[]`                   |
 | `ignore.useGitignore`            | Whether to use patterns from the project's `.gitignore` file                                                                 | `true`                 |
 | `ignore.useDefaultPatterns`      | Whether to use default ignore patterns                                                                                       | `true`                 |
 | `ignore.customPatterns`          | Additional patterns to ignore (using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax)) | `[]`                   |
@@ -1009,7 +1012,7 @@ Example configuration:
     }
   },
   "include": ["**/*"],
-  "ignoreContent": ["docs/**","LICENSE"],
+  "ignoreContent": ["docs/**","LICENSE","!components/bage"],
   "ignore": {
     "useGitignore": true,
     "useDefaultPatterns": true,
