@@ -29,13 +29,15 @@ export const collectFiles = async (
     workerPath: new URL('./workers/fileCollectWorker.js', import.meta.url).href,
     runtime: 'worker_threads',
   });
+  const normalizePath = (p: string) => p.replace(/\\/g, '/');
   const matchesPattern = (pattern: string, filePath: string): boolean => {
-    const normalized = pattern.startsWith('!') ? pattern.slice(1) : pattern;
-    const hasGlob = /[*?\[]/.test(normalized);
+    const normalizedPattern = normalizePath(pattern.startsWith('!') ? pattern.slice(1) : pattern);
+    const normalizedPath = normalizePath(filePath);
+    const hasGlob = /[*?[]/.test(normalizedPattern);
     if (!hasGlob) {
-      return filePath === normalized || filePath.startsWith(`${normalized}/`);
+      return normalizedPath === normalizedPattern || normalizedPath.startsWith(`${normalizedPattern}/`);
     }
-    return minimatch(filePath, normalized);
+    return minimatch(normalizedPath, normalizedPattern);
   };
 
   const tasks = filePaths.map(
