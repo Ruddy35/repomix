@@ -15,6 +15,14 @@ import { createMockConfig } from '../../testing/testUtils.js';
 // Define the max file size constant for tests
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
+// Fixtures with nested directories using both forward and backslash separators
+const nestedPathFixtures = {
+  forward: 'forward/dir/level/file.txt',
+  back: 'back\\dir\\level\\file.txt',
+  mixed: 'mixed/dir\\level/other\\file.txt',
+  include: 'keep/dir/file.txt',
+};
+
 vi.mock('node:fs/promises');
 vi.mock('istextorbinary');
 vi.mock('jschardet');
@@ -121,9 +129,39 @@ describe('fileCollect', () => {
     });
 
     expect(result).toEqual({
+      rawFiles: [{ path: 'components/button.ts' }, { path: 'components/bage/index.ts', content: 'decoded content' }],
+      skippedFiles: [],
+    });
+    expect(fs.readFile).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle mixed path separators in ignoreContent patterns', async () => {
+    const mockFilePaths = [
+      nestedPathFixtures.forward,
+      nestedPathFixtures.back,
+      nestedPathFixtures.mixed,
+      nestedPathFixtures.include,
+    ];
+    const mockRootDir = '/root';
+    const mockConfig = createMockConfig({
+      ignoreContent: ['forward\\dir', 'back/dir', 'mixed/dir\\level'],
+    });
+
+    vi.mocked(isBinary).mockReturnValue(false);
+    vi.mocked(fs.readFile).mockResolvedValue(Buffer.from('file content'));
+    vi.mocked(jschardet.detect).mockReturnValue({ encoding: 'utf-8', confidence: 0.99 });
+    vi.mocked(iconv.decode).mockReturnValue('decoded content');
+
+    const result = await collectFiles(mockFilePaths, mockRootDir, mockConfig, () => {}, {
+      initTaskRunner: mockInitTaskRunner,
+    });
+
+    expect(result).toEqual({
       rawFiles: [
-        { path: 'components/button.ts' },
-        { path: 'components/bage/index.ts', content: 'decoded content' },
+        { path: nestedPathFixtures.forward },
+        { path: nestedPathFixtures.back },
+        { path: nestedPathFixtures.mixed },
+        { path: nestedPathFixtures.include, content: 'decoded content' },
       ],
       skippedFiles: [],
     });

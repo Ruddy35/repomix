@@ -130,8 +130,8 @@ export const mergeConfigs = (
       ...cliConfig.output,
     },
     include: [...(baseConfig.include || []), ...(fileConfig.include || []), ...(cliConfig.include || [])],
-    ignoreContent: [],
-    ignoreContentOverrides: [],
+    ignoreContent: [] as string[],
+    ignoreContentOverrides: [] as string[],
     ignore: {
       ...baseConfig.ignore,
       ...fileConfig.ignore,
