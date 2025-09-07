@@ -29,13 +29,22 @@ export const collectFiles = async (
     workerPath: new URL('./workers/fileCollectWorker.js', import.meta.url).href,
     runtime: 'worker_threads',
   });
+  const hasGlob = (pattern: string) => /[*?\[\]{}()!]/.test(pattern);
+  const shouldSkipContent = (filePath: string, patterns: string[]) =>
+    patterns.some((pattern) => {
+      if (hasGlob(pattern)) return minimatch(filePath, pattern);
+      const normalized = pattern.split('\\').join('/');
+      const prefix = normalized.endsWith('/') ? normalized.slice(0, -1) : normalized;
+      return filePath === prefix || filePath.startsWith(`${prefix}/`);
+    });
+
   const tasks = filePaths.map(
     (filePath) =>
       ({
         filePath,
         rootDir,
         maxFileSize: config.input.maxFileSize,
-        skipContent: config.ignoreContent.some((pattern) => minimatch(filePath, pattern)),
+        skipContent: shouldSkipContent(filePath, config.ignoreContent),
       }) satisfies FileCollectTask,
   );
 

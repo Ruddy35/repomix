@@ -42,7 +42,7 @@ repomix --init --global
 | `output.git.includeLogs`         | Whether to include git logs in the output. Shows commit history with dates, messages, and file paths                        | `false`                |
 | `output.git.includeLogsCount`    | Number of git log commits to include in the output                                                                          | `50`                   |
 | `include`                        | Patterns of files to include using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax)    | `[]`                   |
-| `ignoreContent`                  | Patterns of files whose content should be ignored (using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax)) | `[]`                   |
+| `ignoreContent`                  | Paths or glob patterns of files whose content should be ignored (subdirectories are ignored when a directory path is provided) | `[]`                   |
 | `ignore.useGitignore`            | Whether to use patterns from the project's `.gitignore` file                                                                 | `true`                 |
 | `ignore.useDefaultPatterns`      | Whether to use default ignore patterns (node_modules, .git, etc.)                                                           | `true`                 |
 | `ignore.customPatterns`          | Additional patterns to ignore using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax)   | `[]`                   |
@@ -106,7 +106,7 @@ Here's an example of a complete configuration file (`repomix.config.json`):
     }
   },
   "include": ["**/*"],
-  "ignoreContent": ["docs/**","LICENSE"],
+  "ignoreContent": ["docs","LICENSE"],
   "ignore": {
     "useGitignore": true,
     "useDefaultPatterns": true,
